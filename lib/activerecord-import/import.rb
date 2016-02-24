@@ -290,7 +290,7 @@ class ActiveRecord::Base
       # Force the primary key col into the insert if it's not
       # on the list and we are using a sequence and stuff a nil
       # value for it into each row so the sequencer will fire later
-      if !column_names.include?(primary_key) && connection.prefetch_primary_key? && sequence_name
+      if !column_names.include?(primary_key) && connection.prefetch_primary_key? && reset_sequence_name
          column_names << primary_key
          array_of_attributes.each { |a| a << nil }
       end
@@ -471,7 +471,7 @@ class ActiveRecord::Base
 
           # be sure to query sequence_name *last*, only if cheaper tests fail, because it's costly
           if val.nil? && column.name == primary_key && !sequence_name.blank?
-             connection_memo.next_value_for_sequence(sequence_name)
+             connection_memo.next_value_for_sequence(reset_sequence_name)
           elsif column
             if column.respond_to?(:type_cast_from_user)                         # Rails 4.2 and higher
               connection_memo.quote(column.type_cast_from_user(val), column)
